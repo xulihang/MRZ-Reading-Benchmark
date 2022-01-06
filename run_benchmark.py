@@ -42,22 +42,34 @@ def get_engine_json_name(filename, engine):
     name, ext = os.path.splitext(filename)
     return name + "-" + engine + ".json"
 
-def save_overall_statistics(result):
+def save_overall_statistics(overall_scores, detailed_scores):
     with open("statistics.json","w") as f:
-        f.write(json.dumps(result))
+        f.write(json.dumps(overall_scores))
+    with open("detailed_scores.json","w") as f:
+        f.write(json.dumps(detailed_scores))
 
 def get_overall_statistics(images):
-    result = {}
+    engines_score_of_images = {}
+    overall_scores = {}
     for engine in engines:
         engine_result = {}
         total_score = 0
         for image in images:
             ocr_result = get_ocr_result_from_json(engine, image)
             ground_truth = get_total_text_of_boxes(image["boxes"])
-            total_score = total_score + get_similarity(ocr_result, ground_truth)
+            score = get_similarity(ocr_result, ground_truth)
+            engines_score_of_images[engine+image["filename"]] = score
+            total_score = total_score + score
         engine_result["score"] = total_score/len(images)
-        result[engine] = engine_result
-    return result
+        overall_scores[engine] = engine_result
+        
+    detailed_scores = {}
+    for image in images:
+        scores_of_engines = {}
+        for engine in engines:
+            scores_of_engines[engine] = engines_score_of_images[engine+image["filename"]]
+        detailed_scores[image["filename"]] = scores_of_engines
+    return overall_scores, detailed_scores
 
 def get_ocr_result_from_json(engine, image):
     json_name = get_engine_json_name(image["filename"], engine)
@@ -98,12 +110,12 @@ def run():
     images = read_images_data(args.path)
     
     if args.calculate:
-        result = get_overall_statistics(images)
-        save_overall_statistics(result)
+        overall_scores, detailed_scores = get_overall_statistics(images)
+        save_overall_statistics(overall_scores, detailed_scores)
     else:
         ocr_all_images(images)
-        result = get_overall_statistics(images)
-        save_overall_statistics(result)
+        overall_scores, detailed_scores = get_overall_statistics(images)
+        save_overall_statistics(overall_scores, detailed_scores)
     
 run()
     
