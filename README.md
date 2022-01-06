@@ -1,2 +1,3 @@
-# MRZ-Reading-Benchmark
-MRZ Reading Benchmark
+# OCR Benchmark
+
+A tool for OCR benchmark
