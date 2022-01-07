@@ -43,11 +43,11 @@ def get_engine_json_name(filename, engine):
     name, ext = os.path.splitext(filename)
     return name + "-" + engine + ".json"
 
-def save_overall_statistics(overall_scores, detailed_scores):
+def save_overall_statistics(overall_scores, details):
     with open("statistics.json","w") as f:
         f.write(json.dumps(overall_scores))
-    with open("detailed_scores.json","w") as f:
-        f.write(json.dumps(detailed_scores))
+    with open("details.json","w") as f:
+        f.write(json.dumps(details))
 
 def get_overall_statistics(images):
     engines_score_of_images = {}
@@ -64,7 +64,7 @@ def get_overall_statistics(images):
         engine_result["score"] = total_score/len(images)
         overall_scores[engine] = engine_result
         
-    detailed_scores = {}
+    details = {}
     for image in images:
         image_dict = {}
         engines_dict = {}
@@ -77,8 +77,8 @@ def get_overall_statistics(images):
         ground_truth = get_total_text_of_boxes(image["boxes"])
         image_dict["engines"] = engines_dict
         image_dict["ground_truth"] = ground_truth
-        detailed_scores[image["filename"]] = image_dict
-    return overall_scores, detailed_scores
+        details[image["filename"]] = image_dict
+    return overall_scores, details
 
 def get_ocr_result_from_json(engine, image):
     json_name = get_engine_json_name(image["filename"], engine)
@@ -119,12 +119,12 @@ def run():
     images = read_images_data(args.path)
     
     if args.calculate:
-        overall_scores, detailed_scores = get_overall_statistics(images)
-        save_overall_statistics(overall_scores, detailed_scores)
+        overall_scores, details = get_overall_statistics(images)
+        save_overall_statistics(overall_scores, details)
     else:
         ocr_all_images(images)
-        overall_scores, detailed_scores = get_overall_statistics(images)
-        save_overall_statistics(overall_scores, detailed_scores)
+        overall_scores, details = get_overall_statistics(images)
+        save_overall_statistics(overall_scores, details)
     
 run()
     
