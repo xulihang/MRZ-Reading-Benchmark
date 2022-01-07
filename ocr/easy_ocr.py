@@ -16,9 +16,9 @@ class EasyOCRReader():
         result = self.filtered_result(result)
         if len(result)>=2:
             box1 = {}
-            box1["text"] = result[-2][1]
+            box1["text"] = self.postprocess(result[-2][1])
             box2 = {}
-            box2["text"] = result[-1][1]
+            box2["text"] = self.postprocess(result[-1][1])
             boxes.append(box1)
             boxes.append(box2)
             
@@ -32,12 +32,17 @@ class EasyOCRReader():
     
     def filtered_result(self, result):
         filtered = []
-        threshold = 30
+        threshold = 35
         for line in result:
             text = line[1]
             if len(text)>threshold:
                 filtered.append(line)
         return filtered
+        
+    def postprocess(self,text):
+        text = text.upper()
+        text = text.replace(" ","")
+        return text
         
 if __name__ == "__main__":
     reader = EasyOCRReader()
