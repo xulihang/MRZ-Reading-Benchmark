@@ -28,7 +28,8 @@ def read_images_data(path):
     
 def ocr_and_save_result(reader, image):
     filename = image["filename"]
-    result_dict = reader.ocr(filename)
+    full_path = os.path.join(os.getcwd(), filename)
+    result_dict = reader.ocr(full_path)
     engine = reader.engine
     
     print(result_dict)
@@ -65,10 +66,18 @@ def get_overall_statistics(images):
         
     detailed_scores = {}
     for image in images:
-        scores_of_engines = {}
+        image_dict = {}
+        engines_dict = {}
         for engine in engines:
-            scores_of_engines[engine] = engines_score_of_images[engine+image["filename"]]
-        detailed_scores[image["filename"]] = scores_of_engines
+            engine_dict = {}
+            engine_dict["score"] = engines_score_of_images[engine+image["filename"]]
+            ocr_result = get_ocr_result_from_json(engine, image)
+            engine_dict["ocr_result"] = ocr_result
+            engines_dict[engine] = engine_dict
+        ground_truth = get_total_text_of_boxes(image["boxes"])
+        image_dict["engines"] = engines_dict
+        image_dict["ground_truth"] = ground_truth
+        detailed_scores[image["filename"]] = image_dict
     return overall_scores, detailed_scores
 
 def get_ocr_result_from_json(engine, image):
@@ -80,8 +89,8 @@ def get_ocr_result_from_json(engine, image):
 def get_total_text_of_boxes(boxes):
     text = ""
     for box in boxes:
-        text = text + box["text"]
-    return text
+        text = text + box["text"] + "\n"
+    return text.strip()
 
 def get_similarity(text, ground_truth):
     distance = editdistance.eval(text, ground_truth)

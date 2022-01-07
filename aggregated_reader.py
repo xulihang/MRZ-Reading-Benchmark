@@ -1,13 +1,18 @@
 import time
+import os
 
 class AggregatedReader():
-    def __init__(self, engine="dynamsoft"):
+    def __init__(self, engine="DLR"):
         self.reader = None
         self.engine = engine
         self.init_reader()
         
     def init_reader(self):
-        if self.engine == "PassportEye":
+        if self.engine == "DLR":
+            from ocr.commandline import CommandLineReader
+            root = os.path.dirname(__file__)
+            self.reader = CommandLineReader(config_path=os.path.join(root, "dlr_path"))
+        elif self.engine == "PassportEye":
             from ocr.passport_eye import PassportReader
             self.reader = PassportReader()
     
