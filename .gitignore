@@ -1,2 +1,5 @@
 *.pyc
 commandline
+*.pth
+*.jpg
+*.zip

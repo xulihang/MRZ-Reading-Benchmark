@@ -123,8 +123,6 @@ def run():
         save_overall_statistics(overall_scores, details)
     else:
         ocr_all_images(images)
-        overall_scores, details = get_overall_statistics(images)
-        save_overall_statistics(overall_scores, details)
     
 run()
     

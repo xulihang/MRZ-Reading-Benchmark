@@ -15,6 +15,10 @@ class AggregatedReader():
         elif self.engine == "PassportEye":
             from ocr.passport_eye import PassportReader
             self.reader = PassportReader()
+        elif self.engine == "EasyOCR":
+            from ocr.easy_ocr import EasyOCRReader
+            self.reader = EasyOCRReader()    
+            
     
     def ocr(self, file_path):
         start_time = time.time()
