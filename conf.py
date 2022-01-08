@@ -1,1 +1,1 @@
-engines = ["DLR","PassportEye","EasyOCR"]
+engines = ["DLR","PassportEye","EasyOCR","MLKit"]

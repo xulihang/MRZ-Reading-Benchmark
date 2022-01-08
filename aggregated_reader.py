@@ -17,7 +17,10 @@ class AggregatedReader():
             self.reader = PassportReader()
         elif self.engine == "EasyOCR":
             from ocr.easy_ocr import EasyOCRReader
-            self.reader = EasyOCRReader()    
+            self.reader = EasyOCRReader()
+        elif self.engine == "MLKit":
+            from ocr.easy_ocr import EasyOCRReader
+            self.reader = EasyOCRReader() 
             
     
     def ocr(self, file_path):
