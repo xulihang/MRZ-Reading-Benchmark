@@ -19,8 +19,8 @@ class AggregatedReader():
             from ocr.easy_ocr import EasyOCRReader
             self.reader = EasyOCRReader()
         elif self.engine == "MLKit":
-            from ocr.easy_ocr import EasyOCRReader
-            self.reader = EasyOCRReader() 
+            from ocr.http_reader import HTTPReader
+            self.reader = HTTPReader() 
             
     
     def ocr(self, file_path):
