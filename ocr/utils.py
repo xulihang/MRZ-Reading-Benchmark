@@ -5,7 +5,7 @@ def postprocess(kind, lines):
 
 def postprocess_for_mrz(lines):
     filtered = []
-    threshold = 35
+    threshold = 40
     for line in lines:
         text = line["text"]
         text = text.upper()

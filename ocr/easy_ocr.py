@@ -21,6 +21,7 @@ class EasyOCRReader():
             new_line["text"] = line[1]
             lines.append(new_line)
         result_dict["boxes"] = ocr.utils.postprocess(self.postprocessing, lines)
+        result_dict["raw_boxes"] = lines
         return result_dict
         
 if __name__ == "__main__":

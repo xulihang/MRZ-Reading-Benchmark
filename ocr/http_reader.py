@@ -20,7 +20,8 @@ class HTTPReader():
         dic = {'base64':b64_string.decode("utf-8"),'sdk':self.sdk}
         r = requests.post(self.url, json = dic)
         result_dict = json.loads(r.text)
-        lines = result_dict["results"] 
+        lines = result_dict["results"]
+        result_dict["raw_boxes"] = lines
         result_dict["boxes"] = ocr.utils.postprocess(self.postprocessing,lines)
         result_dict.pop("results")
         return result_dict
@@ -30,6 +31,6 @@ if __name__ == '__main__':
 
     reader = HTTPReader()
     
-    results = reader.ocr("0.jpg")
+    results = reader.ocr("test.jpg")
     print(results)
     
