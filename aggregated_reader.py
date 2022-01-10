@@ -18,6 +18,9 @@ class AggregatedReader():
         elif self.engine == "EasyOCR":
             from ocr.easy_ocr import EasyOCRReader
             self.reader = EasyOCRReader()
+        elif self.engine == "PaddleOCR":
+            from ocr.paddle_ocr import PaddleOCRReader
+            self.reader = PaddleOCRReader()
         elif self.engine == "MLKit":
             from ocr.http_reader import HTTPReader
             self.reader = HTTPReader() 
