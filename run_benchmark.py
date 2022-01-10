@@ -55,13 +55,19 @@ def get_overall_statistics(images):
     for engine in engines:
         engine_result = {}
         total_score = 0
+        total_time = 0
         for image in images:
-            ocr_result = get_ocr_result_from_json(engine, image)
+            result_dict = get_ocr_result_dict_from_json(engine, image)
+            ocr_result = get_total_text_of_boxes(result_dict["boxes"])
             ground_truth = get_total_text_of_boxes(image["boxes"])
             score = get_similarity(ocr_result, ground_truth)
             engines_score_of_images[engine+image["filename"]] = score
             total_score = total_score + score
+            print(result_dict)
+            total_time = total_time + result_dict["elapsedTime"]
         engine_result["score"] = total_score/len(images)
+        engine_result["total_time"] = total_time
+        engine_result["average_time"] = total_time/len(images)
         overall_scores[engine] = engine_result
         
     details = {}
@@ -71,7 +77,8 @@ def get_overall_statistics(images):
         for engine in engines:
             engine_dict = {}
             engine_dict["score"] = engines_score_of_images[engine+image["filename"]]
-            ocr_result = get_ocr_result_from_json(engine, image)
+            result_dict = get_ocr_result_dict_from_json(engine, image)
+            ocr_result = get_total_text_of_boxes(result_dict["boxes"])
             engine_dict["ocr_result"] = ocr_result
             engines_dict[engine] = engine_dict
         ground_truth = get_total_text_of_boxes(image["boxes"])
@@ -80,11 +87,11 @@ def get_overall_statistics(images):
         details[image["filename"]] = image_dict
     return overall_scores, details
 
-def get_ocr_result_from_json(engine, image):
+def get_ocr_result_dict_from_json(engine, image):
     json_name = get_engine_json_name(image["filename"], engine)
     with open(json_name, "r") as f:
         result_dict = json.loads(f.read())
-        return get_total_text_of_boxes(result_dict["boxes"])
+        return result_dict
     
 def get_total_text_of_boxes(boxes):
     text = ""
