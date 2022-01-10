@@ -11,7 +11,7 @@ def postprocess_for_mrz(lines):
         text = text.upper()
         text = text.replace(" ","")
         line["text"] = text
-        if len(text)>threshold:
+        if len(text)>=threshold:
             filtered.append(line)
             
     if len(filtered)>2:
@@ -28,4 +28,11 @@ def corner_points_from_rect(x, y ,width, height):
     y3 = y + height 
     y4 = y + height
     return x1, x2, x3, x4, y1, y2, y3, y4
+    
+'''
+sort boxes based on one coordinate point
+'''
+def sort_boxes(boxes, key="y3"):
+    return sorted(boxes, key=lambda x:x[key])
+    
     

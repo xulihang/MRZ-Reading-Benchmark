@@ -13,6 +13,7 @@ class HTTPReader():
         self.url = url
         self.sdk = sdk
         self.postprocessing = "mrz"
+        self.need_sort = True
     
     def ocr(self, img_path):
         with open(img_path, "rb") as img_file:
@@ -21,8 +22,11 @@ class HTTPReader():
         r = requests.post(self.url, json = dic)
         result_dict = json.loads(r.text)
         lines = result_dict["results"]
+        if self.need_sort:
+            lines = ocr.utils.sort_boxes(lines)
         result_dict["raw_boxes"] = lines
         result_dict["boxes"] = ocr.utils.postprocess(self.postprocessing,lines)
+        
         result_dict.pop("results")
         return result_dict
                 
