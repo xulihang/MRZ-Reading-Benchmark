@@ -14,7 +14,7 @@ class EasyOCRReader():
     def ocr(self, file_path):
         result_dict = {}
         result = self.reader.readtext(file_path)
-        #for mrz
+
         lines = []
         for line in result:
             new_line = {}
