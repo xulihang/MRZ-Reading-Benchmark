@@ -19,6 +19,11 @@ class EasyOCRReader():
         for line in result:
             new_line = {}
             new_line["text"] = line[1]
+            index=1
+            for coord in line[0]:
+                new_line["x"+str(index)]=int(coord[0])
+                new_line["y"+str(index)]=int(coord[1])
+                index=index+1
             lines.append(new_line)
         result_dict["boxes"] = ocr.utils.postprocess(self.postprocessing, lines)
         result_dict["raw_boxes"] = lines
