@@ -17,12 +17,24 @@ class PassportReader():
         
         
         text = p["text"]
+        scale_factor = p["scale_factor"]
         if text != None:
-            x = p["boxes"][0].cx
-            y = p["boxes"][0].cy
-            width = p["boxes"][0].width
-            height = p["boxes"][0].height
-            x1, x2, x3, x4, y1, y2, y3, y4 = ocr.utils.corner_points_from_rect(x, y, width, height)
+            b = p["boxes"][0]
+            polygons = b.as_poly()
+            minX = polygons[0][1]
+            minY = polygons[0][0]
+            maxX = 0
+            maxY = 0
+            for point in polygons:
+                minX = min(minX, point[1])
+                minY = min(minY, point[0])
+                maxX = max(maxX, point[1])
+                maxY = max(maxY, point[0])
+            minX = minX / scale_factor
+            minY = minY / scale_factor
+            maxX = maxX / scale_factor
+            maxY = maxY / scale_factor
+            x1, x2, x3, x4, y1, y2, y3, y4 = ocr.utils.corner_points_from_rect(minX, minY, maxX-minX, maxY-minY)
             box = {}
             box["text"] = text
             box["x1"] = x1
