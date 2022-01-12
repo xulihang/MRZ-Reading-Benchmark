@@ -3,6 +3,7 @@ import argparse
 import os
 import conf
 import editdistance
+from passporteye.mrz.text import MRZ
 from aggregated_reader import AggregatedReader
 
 engines = conf.engines
@@ -34,6 +35,7 @@ def ocr_and_save_result(reader, image):
     
     print(result_dict)
     print(image)
+    result_dict["valid_score"] = get_valid_score(result_dict["boxes"])
     result_dict["score"] = get_similarity(get_total_text_of_boxes(result_dict["boxes"]), get_total_text_of_boxes(image["boxes"]))
     
     with open(get_engine_json_name(filename, engine), "w") as f:
@@ -55,16 +57,21 @@ def get_overall_statistics(images):
     for engine in engines:
         engine_result = {}
         total_score = 0
+        total_valid_score = 0
         total_time = 0
         for image in images:
             result_dict = get_ocr_result_dict_from_json(engine, image)
             ocr_result = get_total_text_of_boxes(result_dict["boxes"])
             ground_truth = get_total_text_of_boxes(image["boxes"])
             score = get_similarity(ocr_result, ground_truth)
+            valid_score = get_valid_score(result_dict["boxes"])
+           
             engines_score_of_images[engine+image["filename"]] = score
+            
             total_score = total_score + score
-            print(result_dict)
+            total_valid_score = total_valid_score + valid_score
             total_time = total_time + result_dict["elapsedTime"]
+        engine_result["valid_score"] = total_valid_score/len(images)
         engine_result["score"] = total_score/len(images)
         engine_result["total_time"] = total_time
         engine_result["average_time"] = total_time/len(images)
@@ -80,6 +87,8 @@ def get_overall_statistics(images):
             result_dict = get_ocr_result_dict_from_json(engine, image)
             ocr_result = get_total_text_of_boxes(result_dict["boxes"])
             engine_dict["ocr_result"] = ocr_result
+            engine_dict["valid_score"] = get_valid_score(result_dict["boxes"])
+            
             engines_dict[engine] = engine_dict
         ground_truth = get_total_text_of_boxes(image["boxes"])
         image_dict["engines"] = engines_dict
@@ -102,6 +111,15 @@ def get_total_text_of_boxes(boxes):
 def get_similarity(text, ground_truth):
     distance = editdistance.eval(text, ground_truth)
     return 1 - distance/max(len(text),len(ground_truth))
+    
+def get_valid_score(boxes):
+    lines = []
+    for box in boxes:
+        text = box["text"]
+        for line in text.split("\n"):
+            lines.append(line)
+    m = MRZ(lines)
+    return m.valid_score
 
 def ocr_all_images(images):
     for engine in engines:
