@@ -133,7 +133,7 @@ class AnylineOCRReader():
         if width>height:
             img = cv2.copyMakeBorder(img, 0, 0, 10, 10, cv2.BORDER_CONSTANT,value=[255,255,255])
         else:
-            img = cv2.copyMakeBorder(img, 1, 10, 0, 0, cv2.BORDER_CONSTANT,value=[255,255,255])
+            img = cv2.copyMakeBorder(img, 10, 10, 0, 0, cv2.BORDER_CONSTANT,value=[255,255,255])
         width = img.shape[1]
         height = img.shape[0]
         
@@ -178,7 +178,7 @@ class AnylineOCRReader():
         
 if __name__ == "__main__":
     reader = AnylineOCRReader()
-    result_dict = reader.ocr("1a9990a8-2b5d-40ac-a727-2b3059715dca.jpg")
+    result_dict = reader.ocr("dd49ec467f711f0eb4c0d60ea7acc6ac.jpg")
     print(result_dict)
     result_dict = reader.ocr("Bulgaria-passport-mini.jpg")
     print(result_dict)
