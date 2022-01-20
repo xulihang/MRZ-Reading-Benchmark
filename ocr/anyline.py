@@ -156,7 +156,7 @@ class AnylineOCRReader():
                 left = int((desired_width - width)/2)
                 right = left
         else: # 4/3 < 16/9 add padding to long side
-            if width>height:
+            if width>=height:
                 desired_width = height * ratio
                 desired_height = height
                 left = int((desired_width - width)/2)
@@ -172,7 +172,7 @@ class AnylineOCRReader():
         
 if __name__ == "__main__":
     reader = AnylineOCRReader()
-    result_dict = reader.ocr("dd49ec467f711f0eb4c0d60ea7acc6ac.jpg")
+    result_dict = reader.ocr("test.jpg")
     print(result_dict)
     result_dict = reader.ocr("Bulgaria-passport-mini.jpg")
     print(result_dict)
