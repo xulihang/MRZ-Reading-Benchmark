@@ -34,11 +34,13 @@ def ocr_and_save_result(reader, image):
     engine = reader.engine
     
     print(result_dict)
-    print(image)
+    print("done")
     result_dict["valid_score"] = get_valid_score(result_dict["boxes"])
     result_dict["score"] = get_similarity(get_total_text_of_boxes(result_dict["boxes"]), get_total_text_of_boxes(image["boxes"]))
     
-    with open(get_engine_json_name(filename, engine), "w") as f:
+    output_path = get_engine_json_name(filename, engine)
+    print(output_path)
+    with open(output_path, "w") as f:
         f.write(json.dumps(result_dict))
 
 def get_engine_json_name(filename, engine):
@@ -125,6 +127,8 @@ def ocr_all_images(images):
     for engine in engines:
         reader = AggregatedReader(engine)
         for image in images:
+            print("OCRing:")
+            print(image)
             ocr_and_save_result(reader, image)
         
 def run():

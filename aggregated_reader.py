@@ -23,7 +23,10 @@ class AggregatedReader():
             self.reader = PaddleOCRReader()
         elif self.engine == "MLKit":
             from ocr.http_reader import HTTPReader
-            self.reader = HTTPReader() 
+            self.reader = HTTPReader()
+        elif self.engine == "Anyline":
+            from ocr.anyline import AnylineOCRReader
+            self.reader = AnylineOCRReader() 
             
     
     def ocr(self, file_path):

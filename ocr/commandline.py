@@ -35,6 +35,6 @@ class CommandLineReader():
         
 if __name__ == '__main__':
     reader = CommandLineReader()
-    results = reader.ocr("F:\\mrz\\costa-forum-166254d7052f6d640-passport.jpg")
+    results = reader.ocr("C:\\Users\\admin\\Desktop\\git\\OCR-Benchmark-Tool\\ocr\\cropped.png")
     print(results)
     
