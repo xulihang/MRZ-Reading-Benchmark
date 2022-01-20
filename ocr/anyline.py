@@ -130,12 +130,6 @@ class AnylineOCRReader():
     def add_padding(self, img):
         width = img.shape[1]
         height = img.shape[0]
-        if width>height:
-            img = cv2.copyMakeBorder(img, 0, 0, 10, 10, cv2.BORDER_CONSTANT,value=[255,255,255])
-        else:
-            img = cv2.copyMakeBorder(img, 10, 10, 0, 0, cv2.BORDER_CONSTANT,value=[255,255,255])
-        width = img.shape[1]
-        height = img.shape[0]
         
         ratio = 16/9
         
@@ -151,7 +145,7 @@ class AnylineOCRReader():
         
         
         if self.get_img_radio(img) > ratio: #17/9 > 16/9 add padding to short side
-            if width>=height:
+            if width>height:
                 desired_width = width
                 desired_height = width / ratio
                 top = int((desired_height - height)/2)
@@ -162,7 +156,7 @@ class AnylineOCRReader():
                 left = int((desired_width - width)/2)
                 right = left
         else: # 4/3 < 16/9 add padding to long side
-            if width>=height:
+            if width>height:
                 desired_width = height * ratio
                 desired_height = height
                 left = int((desired_width - width)/2)
