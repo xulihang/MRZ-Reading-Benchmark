@@ -73,9 +73,11 @@ class AnylineOCRReader():
     def ocr(self, file_path):
         self.results.clear()
         result_dict = {}
+        boxes = []
         img = cv2.imread(file_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = self.add_padding(img)
+        img = self.resize(img)
         seconds_elapsed = 0
         while self.client==None:
             time.sleep(0.5)
@@ -96,28 +98,70 @@ class AnylineOCRReader():
             seconds_elapsed = seconds_elapsed + 0.5
             if seconds_elapsed>10:
                 print("timeout")
-                break
-        result = self.results[0]
-        result_dict["boxes"] = [{"text":result["mrz"].replace("\\n","\n")}]
-        result_dict["elapsedTime"]=result["scanTime"]
+                break                
+        print("results")
+        
+        if len(self.results)>0:
+            result = self.results[0]
+            boxes = [{"text":result["mrz"].replace("\\n","\n")}]
+            result_dict["elapsedTime"]=result["scanTime"]
         c.terminate()
         time.sleep(1)
+        result_dict["boxes"] = boxes
         return result_dict
         
-        
+    def resize(self,img):
+        width = img.shape[1]
+        height = img.shape[0]
+        if width>=height:
+            img = cv2.resize(img, (1920, 1080))
+        else:
+            img = cv2.resize(img, (1080, 1920))
+        return img
+            
+    def get_img_radio(self, img):
+        width = img.shape[1]
+        height = img.shape[0]
+        if width>height:
+            return width/height
+        else:
+            return height/width
+
     def add_padding(self, img):
         width = img.shape[1]
         height = img.shape[0]
+        if width>height:
+            img = cv2.copyMakeBorder(img, 0, 0, 10, 10, cv2.BORDER_CONSTANT,value=[255,255,255])
+        else:
+            img = cv2.copyMakeBorder(img, 1, 10, 0, 0, cv2.BORDER_CONSTANT,value=[255,255,255])
+        width = img.shape[1]
+        height = img.shape[0]
+        
         ratio = 16/9
         
         desired_height = height
         desired_width = width
-
+        
         top = 0
         bottom = 0
         left = 0
         right = 0
-        if height/width != ratio:
+        
+        
+        
+        
+        if self.get_img_radio(img) > ratio: #17/9 > 16/9 add padding to short side
+            if width>=height:
+                desired_width = width
+                desired_height = width / ratio
+                top = int((desired_height - height)/2)
+                bottom = top
+            else:
+                desired_width = height / ratio
+                desired_height = height
+                left = int((desired_width - width)/2)
+                right = left
+        else: # 4/3 < 16/9 add padding to long side
             if width>=height:
                 desired_width = height * ratio
                 desired_height = height
@@ -127,14 +171,14 @@ class AnylineOCRReader():
                 desired_width = width
                 desired_height = width * ratio
                 top = int((desired_height - height)/2)
-                right = top
+                bottom = top
 
         img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT,value=[255,255,255])
         return img 
         
 if __name__ == "__main__":
     reader = AnylineOCRReader()
-    result_dict = reader.ocr("test.jpg")
+    result_dict = reader.ocr("1a9990a8-2b5d-40ac-a727-2b3059715dca.jpg")
     print(result_dict)
     result_dict = reader.ocr("Bulgaria-passport-mini.jpg")
     print(result_dict)
