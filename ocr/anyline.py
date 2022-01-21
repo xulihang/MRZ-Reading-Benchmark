@@ -37,6 +37,7 @@ class AnylineOCRReader():
         self.client = None
         self.mqtt_thread = Thread(target=self.connect_mqtt, args=())
         self.mqtt_thread.start()
+        self.previous_result = ""
         
     def stop_MQTT(self):
         self.client.loop_stop()
@@ -55,7 +56,10 @@ class AnylineOCRReader():
         def on_message(client, userdata, msg):
             #print(msg.topic+" "+str(msg.payload))
             obj = json.loads(msg.payload)
-            self.results.append(obj)
+            if "mrz" in obj:
+                if self.previous_result != obj["mrz"]:
+                    self.previous_result = obj["mrz"]
+                    self.results.append(obj)
 
 
         client = mqtt.Client()
@@ -156,16 +160,16 @@ class AnylineOCRReader():
                 left = int((desired_width - width)/2)
                 right = left
         else: # 4/3 < 16/9 add padding to long side
-            if width>=height:
-                desired_width = height * ratio
-                desired_height = height
-                left = int((desired_width - width)/2)
-                right = left
-            else:
-                desired_width = width
-                desired_height = width * ratio
-                top = int((desired_height - height)/2)
-                bottom = top
+            #if width>=height:
+            desired_width = height * ratio
+            desired_height = height
+            left = int((desired_width - width)/2)
+            right = left
+            #else:
+            #    desired_width = width
+            #    desired_height = width * ratio
+            #    top = int((desired_height - height)/2)
+            #    bottom = top
 
         img = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT,value=[255,255,255])
         return img 
