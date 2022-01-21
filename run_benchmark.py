@@ -61,11 +61,16 @@ def get_overall_statistics(images):
         total_score = 0
         total_valid_score = 0
         total_time = 0
+        exact_num = 0
         for image in images:
             result_dict = get_ocr_result_dict_from_json(engine, image)
             ocr_result = get_total_text_of_boxes(result_dict["boxes"])
             ground_truth = get_total_text_of_boxes(image["boxes"])
             score = get_similarity(ocr_result, ground_truth)
+            
+            if int(score) == 1:
+                exact_num = exact_num + 1
+            
             valid_score = get_valid_score(result_dict["boxes"])
            
             engines_score_of_images[engine+image["filename"]] = score
@@ -75,6 +80,8 @@ def get_overall_statistics(images):
             total_time = total_time + result_dict["elapsedTime"]
         engine_result["valid_score"] = total_valid_score/len(images)
         engine_result["score"] = total_score/len(images)
+        engine_result["exact_num"] = exact_num
+        engine_result["exact_rate"] = exact_num/len(images)
         engine_result["total_time"] = total_time
         engine_result["average_time"] = total_time/len(images)
         overall_scores[engine] = engine_result
@@ -90,7 +97,6 @@ def get_overall_statistics(images):
             ocr_result = get_total_text_of_boxes(result_dict["boxes"])
             engine_dict["ocr_result"] = ocr_result
             engine_dict["valid_score"] = get_valid_score(result_dict["boxes"])
-            
             engines_dict[engine] = engine_dict
         ground_truth = get_total_text_of_boxes(image["boxes"])
         image_dict["engines"] = engines_dict
